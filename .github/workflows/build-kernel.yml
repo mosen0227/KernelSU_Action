@@ -182,7 +182,7 @@ jobs:
     - name: Down mkdtimg
       run: |
          git clone https://github.com/affggh/mkdtimg.git
-         apt install binutils bison flex
+         sudo apt install binutils
          cd mkdtimg && make 
          mv mkdtimg /bin
 
