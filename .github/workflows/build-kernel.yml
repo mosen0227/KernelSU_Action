@@ -70,9 +70,9 @@ jobs:
     - name: Down mkdtimg
       run: |
          git clone https://github.com/nyaaaww/mkdtimg.git
-         sudo apt install binutils
          cd mkdtimg && make 
-         mv mkdtimg /bin
+         sudo mv mkdtimg /bin
+         cd -
 
 
     - name: Remove unused packages
