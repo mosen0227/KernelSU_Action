@@ -66,6 +66,15 @@ jobs:
             fi
         done
 
+        
+    - name: Down mkdtimg
+      run: |
+         git clone https://github.com/affggh/mkdtimg.git
+         sudo apt install binutils
+         cd mkdtimg && make 
+         mv mkdtimg /bin
+
+
     - name: Remove unused packages
       if: env.REMOVE_UNUSED_PACKAGES == 'true'
       uses: jlumbroso/free-disk-space@main
@@ -178,13 +187,6 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         git clone https://android.googlesource.com/platform/system/tools/mkbootimg tools -b master-kernel-build-2022 --depth=1
-
-    - name: Down mkdtimg
-      run: |
-         git clone https://github.com/affggh/mkdtimg.git
-         sudo apt install binutils
-         cd mkdtimg && make 
-         mv mkdtimg /bin
 
 
     - name: Download kernel source
