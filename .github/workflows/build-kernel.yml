@@ -69,7 +69,7 @@ jobs:
         
     - name: Down mkdtimg
       run: |
-         git clone https://github.com/affggh/mkdtimg.git
+         git clone https://github.com/nyaaaww/mkdtimg.git
          sudo apt install binutils
          cd mkdtimg && make 
          mv mkdtimg /bin
