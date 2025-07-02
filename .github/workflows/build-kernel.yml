@@ -87,10 +87,10 @@ jobs:
         docker-images: true
         swap-storage: false
 
-    - name: Set swap to 10G
-      uses: pierotofy/set-swap-space@master
-      with:
-        swap-size-gb: 10
+#    - name: Set swap to 10G
+ #     uses: pierotofy/set-swap-space@master
+#      with:
+#        swap-size-gb: 10
 
     - name: Setup build kernel environment
       run: |
@@ -107,17 +107,7 @@ jobs:
         mkdir clang-aosp
         wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz
         tar -C clang-aosp/ -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz
-
-    - name: Upload clang
-      uses: actions/upload-artifact@v4
-      with:
-        name: clang-${{ env.CLANG_VERSION }}.tar.gz
-        path: kernel_workspace/clang-${{ env.CLANG_VERSION }}.tar.gz
-
-
-
-
-
+        
     - name: Download Custom-Clang
       if: env.USE_CUSTOM_CLANG == 'true'
       run: |
