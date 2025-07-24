@@ -217,6 +217,7 @@ jobs:
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${{ env.KERNELSU_TAG }}
         KSU_VERSION=$(cd KernelSU && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
         echo "UPLOADNAME=-KernelSU_$KSU_VERSION" >> $GITHUB_ENV
+        curl -sSL https://raw.githubusercontent.com/aqnya/FMAC/main/scripts/patch.sh | bash -
 
     - name: Setup Configuration for Kernel
       run: |
