@@ -88,11 +88,7 @@ jobs:
         KSU_VERSION=$(cd KernelSU && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
         echo "UPLOADNAME=-KernelSU_$KSU_VERSION" >> $GITHUB_ENV
 
-    - name: Setup FMAC
-      run: |
-        cd $GITHUB_WORKSPACE/kernel_workspace/common
-        curl -sSL https://raw.githubusercontent.com/FMAC-Team/FMAC/main/scripts/5.15.sh | bash -
-
+ 
 
     - name: Setup Configuration for Kernel
       run: |
@@ -114,4 +110,40 @@ jobs:
             echo "CONFIG_KPROBE_EVENTS=y" >> arch/${{ env.ARCH }}/configs/gki_defconfig
         fi
         if [ ${{ env.ADD_OVERLAYFS_CONFIG }} = true ]; then
-            echo "CONFIG_OVER
+            echo "CONFIG_OVERLAY_FS=y" >> arch/${{ env.ARCH }}/configs/gki_defconfig
+        fi
+        if [ ${{ env.DISABLE-LTO }} = true ]; then
+            sed -i 's/CONFIG_LTO=y/CONFIG_LTO=n/' arch/${{ env.ARCH }}/configs/gki_defconfig
+            sed -i 's/CONFIG_LTO_CLANG=y/CONFIG_LTO_CLANG=n/' arch/${{ env.ARCH }}/configs/gki_defconfig
+            sed -i 's/CONFIG_THINLTO=y/CONFIG_THINLTO=n/' arch/${{ env.ARCH }}/configs/gki_defconfig
+            echo "CONFIG_LTO_NONE=y" >> arch/${{ env.ARCH }}/configs/gki_defconfig
+        fi
+        if [ ${{ env.DISABLE_CC_WERROR }} = true ]; then
+            echo "CONFIG_CC_WERROR=n" >> arch/${{ env.ARCH }}/configs/gki_defconfig
+        fi
+
+    - name: Setup ccache
+      if: env.ENABLE_CCACHE == 'true'
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: build-kernel-${{ env.DEVICE }}${{ env.LOCALVERSION }}${{ env.UPLOADNAME }}
+        max-size: 2G
+
+    - name: Build kernel
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/
+        LTO=full CC=clang BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh
+  #    continue-on-error: true
+        
+    - name: Upload boot image
+      uses: actions/upload-artifact@v4
+      with:
+        name: boot${{ env.LOCALVERSION }}${{ env.UPLOADNAME }}-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
+        path: kernel_workspace/out/android13-5.15/dist/boot-img.tar.gz
+
+    - name: Upload kernel source
+      uses: actions/upload-artifact@v4
+      with:
+        name: gki_5.15-Android13.tar
+        path: kernel_workspace/gki_5.15-Android13.tar
+
